@@ -1,0 +1,8 @@
+
+__recovery
+__history
+Win32
+*.identcache
+*.local
+*.dtmp
+*.bkp
