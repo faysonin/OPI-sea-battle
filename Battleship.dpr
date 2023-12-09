@@ -1,11 +1,11 @@
-program Battleship;
+п»їprogram Battleship;
 
 uses
   SysUtils;
 
 type
   TMATRIX = array [1 .. 10, 1 .. 10] of string;
-  TMASSTR = array [1 .. 20] of string;
+  TMASSTR = array [1 .. 40] of string;
 
 var
   field1, field2, field1_with_boats, field2_with_boats: TMATRIX;
@@ -14,20 +14,63 @@ var
   letter: char;
   shot: string;
   flag1, flag2, flag, repeatshot: boolean;
+  inputfile: textfile;
 
+procedure help_table(var for_letters: TMASSTR);                  // РґР»СЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ
+var                                                              // РёРЅРґРµРєСЃРѕРІ Р±СѓРєРІ
+  letter: char;
+begin
+  letter := 'Рђ';
+  for i := 1 to 10 do
+  begin
+    if letter = 'Р™' then
+    begin
+      letter := 'Рљ';
+    end;
+    letters[i] := letter;
+    letter := Chr(Ord(letter) + 1);
+  end;
 
-procedure outputMAS(var MAS: TMATRIX);
+  letter := '1';
+  for i := 11 to 20 do
+  begin
+    if letter = ':' then
+    begin
+      letters[i] := '10';
+    end
+    else
+    begin
+      letters[i] := letter;
+      letter := Chr(Ord(letter) + 1);
+    end;
+  end;
+  letter := 'Р°';
+  for i := 21 to 30 do
+  begin
+    if letter = 'Р№' then
+    begin
+      letters[i] := 'Рє';
+    end
+    else
+    begin
+      letters[i] := letter;
+      letter := Chr(Ord(letter) + 1);
+    end;
+  end;
+end;
+
+procedure outputMAS(var MAS: TMATRIX);            // Р’С‹РІРѕРґРёС‚ РјР°С‚СЂРёС†Сѓ, РїРѕР»Рµ СЃ РєРѕСЂРѕР±Р»СЏРјРё
 var
   nomerstr, i, j: integer;
   nomerstolb: char;
 begin
-  nomerstolb := 'А';
+  nomerstolb := 'Рђ';
   write('    ');
   for i := 1 to 10 do
   begin
-    if nomerstolb = 'Й' then
+    if nomerstolb = 'Р™' then
     begin
-      nomerstolb := 'К';
+      nomerstolb := 'Рљ';
       write(nomerstolb:3, ' ');
     end
     else
@@ -58,14 +101,15 @@ begin
   writeln;
 end;
 
-procedure show_war(var field, field_with_boats: TMATRIX; var onemoreshot: boolean);
-var
+procedure show_war(var field, field_with_boats: TMATRIX;
+  var onemoreshot: boolean);                                  // РџСЂРѕС†РµРґСѓСЂР° РґР»СЏ СЃС‚СЂРµР»СЊР±С‹
+var                                                           // Рё РѕС‚РѕР±РѕСЂР°Р¶РµРЅРёРµ РІС‹СЃС‚СЂРµР»РѕРІ Рё РїРѕРїР°РґР°РЅРёР№ РЅР° РјР°С‚СЂРёС†Рµ
   letter: char;
   shot: string;
   flag1, flag2: boolean;
   i, j, index1, index2: integer;
 begin
-  writeln('Введите координаты выстрела : (Пример  Д-1)');
+  writeln('Р’РІРµРґРёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІС‹СЃС‚СЂРµР»Р° : (РџСЂРёРјРµСЂ  Р”-1)');
   readln(shot);
   flag1 := true;
   flag2 := true;
@@ -74,14 +118,18 @@ begin
   index2 := 0;
   for i := 1 to length(shot) do
   begin
-    for j := 1 to 20 do
+    for j := 1 to 30 do
     begin
       if (shot[i] = letters[j]) then
       begin
         if flag1 then
         begin
-          index1 := j;
+          index1 := j - 20;
           flag1 := false;
+          if index1 < 0 then
+          begin
+            index1 := j;
+          end;
         end
         else if flag2 then
         begin
@@ -104,98 +152,78 @@ begin
       end;
     end;
   end;
-  //writeln(index1, ' ', index2);
-  if (field_with_boats[index2, index1] <> 'К') and (field_with_boats[index2, index1] <> 'X') then
+  // writeln(index1, ' ', index2);
+  if (field_with_boats[index2, index1] <> 'Рљ') and
+    (field_with_boats[index2, index1] <> 'X') then
   begin
     field[index2, index1] := '*';
     field_with_boats[index2, index1] := '*';
-    writeln('Ход переходит другом игроку');
+    writeln('РҐРѕРґ РїРµСЂРµС…РѕРґРёС‚ РґСЂСѓРіРѕРј РёРіСЂРѕРєСѓ');
   end
   else
   begin
     if field_with_boats[index2, index1] = 'X' then
     begin
       onemoreshot := false;
-      writeln('Ход переходит другом игроку');
+      writeln('РҐРѕРґ РїРµСЂРµС…РѕРґРёС‚ РґСЂСѓРіРѕРј РёРіСЂРѕРєСѓ');
     end
     else
     begin
       field[index2, index1] := 'X';
       field_with_boats[index2, index1] := 'X';
       onemoreshot := true;
-      writeln('Вы стреляете ещё раз');
+      writeln('Р’С‹ СЃС‚СЂРµР»СЏРµС‚Рµ РµС‰С‘ СЂР°Р·');
     end;
   end;
 end;
 
 begin
-  letter := 'А';
-  for i := 1 to 10 do
-  begin
-    if letter = 'Й' then
-    begin
-      letter := 'К';
-    end;
-    letters[i] := letter;
-    letter := Chr(Ord(letter) + 1);
-  end;
-
-  letter := '1';
-  for i := 11 to 20 do
-  begin
-    if letter = ':' then
-    begin
-      letters[i] := '10';
-    end
-    else
-    begin
-      letters[i] := letter;
-      letter := Chr(Ord(letter) + 1);
-    end;
-  end;
-  writeln('Краткое описание : ');
-  writeln('Игра - Морской Бой');
-  writeln('1. Введите координаты выстрела(Буква вводится на русском языке');
-  writeln('2. Попадание засчитывается если вы попали во вражеский корабль(X), если не попали(*) ');
-  writeln('3. Игра продолжается до того момента, пока не будут уничтожены все вражеские(ваши) корабли');
-  writeln('Приятной игры!');
+  help_table(letters);
+  writeln('РљСЂР°С‚РєРѕРµ РѕРїРёСЃР°РЅРёРµ : ');
+  writeln('РРіСЂР° - РњРѕСЂСЃРєРѕР№ Р‘РѕР№');
+  writeln('1. Р’РІРµРґРёС‚Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІС‹СЃС‚СЂРµР»Р°(Р‘СѓРєРІР° РІРІРѕРґРёС‚СЃСЏ РЅР° СЂСѓСЃСЃРєРѕРј СЏР·С‹РєРµ');
+  writeln('2. РџРѕРїР°РґР°РЅРёРµ Р·Р°СЃС‡РёС‚С‹РІР°РµС‚СЃСЏ РµСЃР»Рё РІС‹ РїРѕРїР°Р»Рё РІРѕ РІСЂР°Р¶РµСЃРєРёР№ РєРѕСЂР°Р±Р»СЊ(X), РµСЃР»Рё РЅРµ РїРѕРїР°Р»Рё(*) ');
+  writeln('3. РРіСЂР° РїСЂРѕРґРѕР»Р¶Р°РµС‚СЃСЏ РґРѕ С‚РѕРіРѕ РјРѕРјРµРЅС‚Р°, РїРѕРєР° РЅРµ Р±СѓРґСѓС‚ СѓРЅРёС‡С‚РѕР¶РµРЅС‹ РІСЃРµ РІСЂР°Р¶РµСЃРєРёРµ(РІР°С€Рё) РєРѕСЂР°Р±Р»Рё');
+  writeln('РџСЂРёСЏС‚РЅРѕР№ РёРіСЂС‹!');
   flag := true;
   repeatshot := true;
   writeln('---------------------------------------------------------------------');
-  writeln('Начало игры!');
+  writeln('РќР°С‡Р°Р»Рѕ РёРіСЂС‹!');
   for i := 1 to 5 do
   begin
     for j := 1 to 5 do
     begin
-      field1_with_boats[i, j] := 'К';
+      field1_with_boats[i, j] := 'Рљ';
     end;
   end;
   for i := 5 to 10 do
   begin
     for j := 5 to 10 do
     begin
-      field2_with_boats[i, j] := 'К';
+      field2_with_boats[i, j] := 'Рљ';
     end;
   end;
   while flag do
   begin
-    writeln('Ход игрока Номер 1');
-    writeln('Поле противника');
+    writeln('РҐРѕРґ РёРіСЂРѕРєР° РќРѕРјРµСЂ 1');
+    writeln('РџРѕР»Рµ РїСЂРѕС‚РёРІРЅРёРєР°');
     repeatshot := true;
     while repeatshot do
     begin
-      show_war(field2,field2_with_boats, repeatshot);
       outputMAS(field2);
-      //outputMAS(field2_with_boats);
+      show_war(field2, field2_with_boats, repeatshot);
+      outputMAS(field2);
+      // outputMAS(field2_with_boats);
     end;
-    writeln('Ход игрока Номер 2');
-    writeln('Поле противника');
+    writeln('РҐРѕРґ РёРіСЂРѕРєР° РќРѕРјРµСЂ 2');
+    writeln('Р’Р°С€Рµ РїРѕР»Рµ');
     repeatshot := true;
     while repeatshot do
     begin
-      show_war(field1,field1_with_boats, repeatshot);
       outputMAS(field1);
-      //outputMAS(field1_with_boats);
+      show_war(field1, field1_with_boats, repeatshot);
+      outputMAS(field1);
+      // outputMAS(field1_with_boats);
     end;
   end;
   readln;
