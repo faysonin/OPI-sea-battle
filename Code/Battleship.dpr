@@ -1,5 +1,8 @@
 ﻿program Battleship;
 
+{$APPTYPE CONSOLE}
+{$R *.res}
+
 uses
   SysUtils;
 
