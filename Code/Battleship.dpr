@@ -12,7 +12,7 @@ type
 
 var
   field1, field2, field1_with_boats, field2_with_boats: TMATRIX;
-  letters: TMASSTR;
+  lettersро: TMASSTR;
   i, j, index1, index2: integer;
   letter: char;
   shot: string;
@@ -30,7 +30,7 @@ begin
     begin
       letter := 'К';
     end;
-    letters[i] := letter;
+    lettersро[i] := letter;
     letter := Chr(Ord(letter) + 1);
   end;
 
@@ -39,11 +39,11 @@ begin
   begin
     if letter = ':' then
     begin
-      letters[i] := '10';
+      lettersро[i] := '10';
     end
     else
     begin
-      letters[i] := letter;
+      lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
   end;
@@ -52,43 +52,24 @@ begin
   begin
     if letter = 'й' then
     begin
-      letters[i] := 'к';
+      lettersро[i] := 'к';
     end
     else
     begin
-      letters[i] := letter;
+      lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
   end;
 end;
 
-procedure outputMAS(var MAS: TMATRIX);            // Выводит матрицу, поле с короблями
+procedure outputMAS(var MAS,MAS2: TMATRIX);            // Выводит матрицу, поле с короблями
 var
   nomerstr, i, j: integer;
   nomerstolb: char;
 begin
-  nomerstolb := 'А';
-  write('    ');
-  for i := 1 to 10 do
-  begin
-    if nomerstolb = 'Й' then
-    begin
-      nomerstolb := 'К';
-      write(nomerstolb:3, ' ');
-    end
-    else
-    begin
-      write(nomerstolb:3, ' ');
-      nomerstolb := Chr(Ord(nomerstolb) + 1);
-    end;
-  end;
-  writeln;
-  write('    -');
-  for i := 1 to 10 do
-  begin
-    write('----');
-  end;
-  writeln;
+  writeln('                ПОЛЕ ПРОТИВНИКА                                    ВАШЕ ПОЛЕ     ');
+  writeln('      А   Б   В   Г   Д   Е   Ж   З   И   К          А   Б   В   Г   Д   Е   Ж   З   И   К');
+  writeln('   ------------------------------------------     ------------------------------------------');
   nomerstr := 1;
   for i := 1 to 10 do
   begin
@@ -97,15 +78,33 @@ begin
     begin
       write(MAS[i, j]:2, ' |');
     end;
+
+    write('  ');
+
+    write(nomerstr:3, ' |');
+    for j := 1 to 10 do
+    begin
+      write(MAS2[i, j]:2, ' |');
+    end;
+
     inc(nomerstr);
     writeln;
-    writeln('   ------------------------------------------');
+    writeln('   ------------------------------------------     ------------------------------------------');
   end;
+  writeln;
+  writeln;
+  writeln;
   writeln;
 end;
 
-procedure show_war(var field, field_with_boats: TMATRIX;
-  var onemoreshot: boolean);                                  // Процедура для стрельбы
+procedure clean_console;
+var i:integer;
+begin
+  for i := 1 to 30 do
+  writeln;
+end;
+
+procedure show_war(var field, field_with_boats, other_field_with_boats: TMATRIX;var onemoreshot: boolean);                                  // Процедура для стрельбы
 var                                                           // и отоборажение выстрелов и попаданий на матрице
   letter: char;
   shot: string;
@@ -123,7 +122,7 @@ begin
   begin
     for j := 1 to 30 do
     begin
-      if (shot[i] = letters[j]) then
+      if (shot[i] = lettersро[j]) then
       begin
         if flag1 then
         begin
@@ -161,27 +160,46 @@ begin
   begin
     field[index2, index1] := '*';
     field_with_boats[index2, index1] := '*';
-    writeln('Ход переходит другом игроку');
+
+
+    outputMAS(field,other_field_with_boats);
+    writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
+    readln;
+    clean_console;
+    writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
+    readln;
   end
   else
   begin
     if field_with_boats[index2, index1] = 'X' then
     begin
       onemoreshot := false;
-      writeln('Ход переходит другом игроку');
+      outputMAS(field,other_field_with_boats);
+
+
+      writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
+      readln;
+    clean_console;
+    writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
+    readln;
     end
     else
     begin
       field[index2, index1] := 'X';
       field_with_boats[index2, index1] := 'X';
       onemoreshot := true;
+
+
+      outputMAS(field,other_field_with_boats);
       writeln('Вы стреляете ещё раз');
     end;
   end;
 end;
 
+
+
 begin
-  help_table(letters);
+  help_table(lettersро);
   writeln('Краткое описание : ');
   writeln('Игра - Морской Бой');
   writeln('1. Введите координаты выстрела(Буква вводится на русском языке');
@@ -191,7 +209,7 @@ begin
   flag := true;
   repeatshot := true;
   writeln('---------------------------------------------------------------------');
-  writeln('Начало игры!');
+ // writeln('Начало игры!');
   for i := 1 to 5 do
   begin
     for j := 1 to 5 do
@@ -206,27 +224,24 @@ begin
       field2_with_boats[i, j] := 'К';
     end;
   end;
+  writeln('просим сесть за компьютер игрока номер 1');
+  writeln('нажмите Enter для начала игры');
+  readln;
   while flag do
   begin
     writeln('Ход игрока Номер 1');
-    writeln('Поле противника');
     repeatshot := true;
     while repeatshot do
     begin
-      outputMAS(field2);
-      show_war(field2, field2_with_boats, repeatshot);
-      outputMAS(field2);
-      // outputMAS(field2_with_boats);
+      outputMAS(field2, field1_with_boats);
+      show_war(field2, field2_with_boats, field1_with_boats, repeatshot);
     end;
     writeln('Ход игрока Номер 2');
-    writeln('Ваше поле');
     repeatshot := true;
     while repeatshot do
     begin
-      outputMAS(field1);
-      show_war(field1, field1_with_boats, repeatshot);
-      outputMAS(field1);
-      // outputMAS(field1_with_boats);
+      outputMAS(field1, field2_with_boats);
+      show_war(field1, field1_with_boats, field1_with_boats, repeatshot);
     end;
   end;
   readln;
