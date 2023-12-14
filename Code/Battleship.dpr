@@ -12,6 +12,7 @@ type
   Str = Array [1 .. 10] of string;
 
 var
+<<<<<<< HEAD
   field1, field2: TMATRIX;
   field1_with_boats: TMATRIX = (('М', 'М', 'М', 'М', 'К', 'К', 'К', 'К', 'М', 'М'),
     ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'К', 'М'),
@@ -33,6 +34,9 @@ var
     ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
     ('К', 'К', 'К', 'М', 'К', 'М', 'М', 'М', 'М', 'М'),
     ('М', 'М', 'М', 'М', 'М', 'М', 'К', 'М', 'М', 'М'));
+=======
+  field1, field2, field1_with_boats, field2_with_boats: TMATRIX;
+>>>>>>> 1c3b5438484e0b5f263639b51432d2865d64746c
   lettersро: TMASSTR;
   i, j, index1, index2: integer;
   letter: char;
@@ -283,7 +287,24 @@ begin
   repeatshot := true;
   writeln('---------------------------------------------------------------------');
  // writeln('Начало игры!');
+<<<<<<< HEAD
  // field1_with_boats := IfFileValid(boats2);
+=======
+  for i := 1 to 5 do
+  begin
+    for j := 1 to 5 do
+    begin
+      field1_with_boats[i, j] := 'К';
+    end;
+  end;
+  for i := 5 to 10 do
+  begin
+    for j := 5 to 10 do
+    begin
+      field2_with_boats[i, j] := 'К';
+    end;
+  end;
+>>>>>>> 1c3b5438484e0b5f263639b51432d2865d64746c
   writeln('просим сесть за компьютер игрока номер 1');
   writeln('нажмите Enter для начала игры');
   readln;
