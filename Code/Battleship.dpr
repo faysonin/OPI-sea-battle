@@ -9,15 +9,88 @@ uses
 type
   TMATRIX = array [1 .. 10, 1 .. 10] of string;
   TMASSTR = array [1 .. 40] of string;
+  Str = Array [1 .. 10] of string;
 
 var
-  field1, field2, field1_with_boats, field2_with_boats: TMATRIX;
-  letters: TMASSTR;
+  field1, field2: TMATRIX;
+  field1_with_boats: TMATRIX = (('М', 'М', 'М', 'М', 'К', 'К', 'К', 'К', 'М', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'К', 'М'),
+    ('М', 'К', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('М', 'К', 'М', 'М', 'М', 'М', 'М', 'К', 'К', 'М'),
+    ('М', 'К', 'М', 'К', 'К', 'К', 'М', 'М', 'М', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('М', 'К', 'М', 'М', 'М', 'К', 'М', 'К', 'К', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'К', 'М', 'М', 'М', 'К'),
+    ('М', 'М', 'К', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'К', 'М', 'М'));
+  field2_with_boats: TMATRIX = (('К', 'К', 'М', 'К', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'К', 'М', 'М'),
+    ('К', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('К', 'М', 'К', 'К', 'К', 'К', 'М', 'М', 'М', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('К', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('К', 'М', 'М', 'К', 'М', 'К', 'К', 'К', 'М', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
+    ('К', 'К', 'К', 'М', 'К', 'М', 'М', 'М', 'М', 'М'),
+    ('М', 'М', 'М', 'М', 'М', 'М', 'К', 'М', 'М', 'М'));
+  lettersро: TMASSTR;
   i, j, index1, index2: integer;
   letter: char;
-  shot: string;
+  shot, boats1, boats2: string;
   flag1, flag2, flag, repeatshot: boolean;
   inputfile: textfile;
+function IfFileValid(FileName: string): TMATRIX;
+var
+  f: textfile;
+  FileData: Str;
+  i, j: integer;
+  TempMat: array [1 .. 10, 1 .. 10] of char;
+  Pol: TMATRIX;
+begin
+  AssignFile(f, FileName + '.txt');
+  Reset(f);
+  i := 1;
+  while (not EOF(f)) do
+  begin
+    Readln(f, FileData[i]);
+    i := i + 1;
+  end;
+  i := 1;
+  j := 1;
+  for var k := 1 to 10 do
+  begin
+    while (j < Length(FileData[i])) do
+    begin
+      if ((FileData[k][j] = 'M') or (FileData[k][j] = 'К')) then
+      begin
+        TempMat[i][k] := FileData[k][j];
+      end
+      else
+      begin
+        writeln('Невалидный файл');
+        break;
+      end;
+      j := j + 2;
+      i := i + 1;
+    end;
+  end;
+  for var k := 1 to 10 do
+  begin
+    for var h := 1 to 10 do
+    begin
+      if TempMat[h][k] = 'M' then
+      begin
+        Pol[h][k] := '0';
+      end
+      else
+      begin
+        if TempMat[h][k] = 'К' then
+          Pol[h][k] := '1';
+      end;
+    end;
+  end;
+  result := Pol
+end;
 
 procedure help_table(var for_letters: TMASSTR);                  // для считывания
 var                                                              // индексов букв
@@ -30,7 +103,7 @@ begin
     begin
       letter := 'К';
     end;
-    letters[i] := letter;
+    lettersро[i] := letter;
     letter := Chr(Ord(letter) + 1);
   end;
 
@@ -39,11 +112,11 @@ begin
   begin
     if letter = ':' then
     begin
-      letters[i] := '10';
+      lettersро[i] := '10';
     end
     else
     begin
-      letters[i] := letter;
+      lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
   end;
@@ -52,43 +125,24 @@ begin
   begin
     if letter = 'й' then
     begin
-      letters[i] := 'к';
+      lettersро[i] := 'к';
     end
     else
     begin
-      letters[i] := letter;
+      lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
   end;
 end;
 
-procedure outputMAS(var MAS: TMATRIX);            // Выводит матрицу, поле с короблями
+procedure outputMAS(var MAS,MAS2: TMATRIX);            // Выводит матрицу, поле с короблями
 var
   nomerstr, i, j: integer;
   nomerstolb: char;
 begin
-  nomerstolb := 'А';
-  write('    ');
-  for i := 1 to 10 do
-  begin
-    if nomerstolb = 'Й' then
-    begin
-      nomerstolb := 'К';
-      write(nomerstolb:3, ' ');
-    end
-    else
-    begin
-      write(nomerstolb:3, ' ');
-      nomerstolb := Chr(Ord(nomerstolb) + 1);
-    end;
-  end;
-  writeln;
-  write('    -');
-  for i := 1 to 10 do
-  begin
-    write('----');
-  end;
-  writeln;
+  writeln('                ПОЛЕ ПРОТИВНИКА                                    ВАШЕ ПОЛЕ     ');
+  writeln('      А   Б   В   Г   Д   Е   Ж   З   И   К          А   Б   В   Г   Д   Е   Ж   З   И   К');
+  writeln('   ------------------------------------------     ------------------------------------------');
   nomerstr := 1;
   for i := 1 to 10 do
   begin
@@ -97,15 +151,33 @@ begin
     begin
       write(MAS[i, j]:2, ' |');
     end;
+
+    write('  ');
+
+    write(nomerstr:3, ' |');
+    for j := 1 to 10 do
+    begin
+      write(MAS2[i, j]:2, ' |');
+    end;
+
     inc(nomerstr);
     writeln;
-    writeln('   ------------------------------------------');
+    writeln('   ------------------------------------------     ------------------------------------------');
   end;
+  writeln;
+  writeln;
+  writeln;
   writeln;
 end;
 
-procedure show_war(var field, field_with_boats: TMATRIX;
-  var onemoreshot: boolean);                                  // Процедура для стрельбы
+procedure clean_console;
+var i:integer;
+begin
+  for i := 1 to 30 do
+  writeln;
+end;
+
+procedure show_war(var field, field_with_boats, other_field_with_boats: TMATRIX;var onemoreshot: boolean);                                  // Процедура для стрельбы
 var                                                           // и отоборажение выстрелов и попаданий на матрице
   letter: char;
   shot: string;
@@ -123,7 +195,7 @@ begin
   begin
     for j := 1 to 30 do
     begin
-      if (shot[i] = letters[j]) then
+      if (shot[i] = lettersро[j]) then
       begin
         if flag1 then
         begin
@@ -161,27 +233,46 @@ begin
   begin
     field[index2, index1] := '*';
     field_with_boats[index2, index1] := '*';
-    writeln('Ход переходит другом игроку');
+
+
+    outputMAS(field,other_field_with_boats);
+    writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
+    readln;
+    clean_console;
+    writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
+    readln;
   end
   else
   begin
     if field_with_boats[index2, index1] = 'X' then
     begin
       onemoreshot := false;
-      writeln('Ход переходит другом игроку');
+      outputMAS(field,other_field_with_boats);
+
+
+      writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
+      readln;
+    clean_console;
+    writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
+    readln;
     end
     else
     begin
       field[index2, index1] := 'X';
       field_with_boats[index2, index1] := 'X';
       onemoreshot := true;
+
+
+      outputMAS(field,other_field_with_boats);
       writeln('Вы стреляете ещё раз');
     end;
   end;
 end;
 
+
+
 begin
-  help_table(letters);
+  help_table(lettersро);
   writeln('Краткое описание : ');
   writeln('Игра - Морской Бой');
   writeln('1. Введите координаты выстрела(Буква вводится на русском языке');
@@ -191,42 +282,26 @@ begin
   flag := true;
   repeatshot := true;
   writeln('---------------------------------------------------------------------');
-  writeln('Начало игры!');
-  for i := 1 to 5 do
-  begin
-    for j := 1 to 5 do
-    begin
-      field1_with_boats[i, j] := 'К';
-    end;
-  end;
-  for i := 5 to 10 do
-  begin
-    for j := 5 to 10 do
-    begin
-      field2_with_boats[i, j] := 'К';
-    end;
-  end;
+ // writeln('Начало игры!');
+ // field1_with_boats := IfFileValid(boats2);
+  writeln('просим сесть за компьютер игрока номер 1');
+  writeln('нажмите Enter для начала игры');
+  readln;
   while flag do
   begin
     writeln('Ход игрока Номер 1');
-    writeln('Поле противника');
     repeatshot := true;
     while repeatshot do
     begin
-      outputMAS(field2);
-      show_war(field2, field2_with_boats, repeatshot);
-      outputMAS(field2);
-      // outputMAS(field2_with_boats);
+      outputMAS(field2, field1_with_boats);
+      show_war(field2, field2_with_boats, field1_with_boats, repeatshot);
     end;
     writeln('Ход игрока Номер 2');
-    writeln('Ваше поле');
     repeatshot := true;
     while repeatshot do
     begin
-      outputMAS(field1);
-      show_war(field1, field1_with_boats, repeatshot);
-      outputMAS(field1);
-      // outputMAS(field1_with_boats);
+      outputMAS(field1, field2_with_boats);
+      show_war(field1, field1_with_boats, field1_with_boats, repeatshot);
     end;
   end;
   readln;
