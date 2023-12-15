@@ -4,6 +4,9 @@
 {$R *.res}
 
 uses
+
+  Windows,
+  Messages,
   SysUtils;
 
 type
@@ -33,12 +36,15 @@ var
     ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
     ('К', 'К', 'К', 'М', 'К', 'М', 'М', 'М', 'М', 'М'),
     ('М', 'М', 'М', 'М', 'М', 'М', 'К', 'М', 'М', 'М'));
+
   lettersро: TMASSTR;
   i, j, index1, index2: integer;
   letter: char;
+
   shot, boats1, boats2: string;
   flag1, flag2, flag, repeatshot: boolean;
   inputfile: textfile;
+
 function IfFileValid(FileName: string): TMATRIX;
 var
   f: textfile;
@@ -46,92 +52,150 @@ var
   i, j: integer;
   TempMat: array [1 .. 10, 1 .. 10] of char;
   Pol: TMATRIX;
+
 begin
+
   AssignFile(f, FileName + '.txt');
   Reset(f);
   i := 1;
+
   while (not EOF(f)) do
   begin
     Readln(f, FileData[i]);
     i := i + 1;
   end;
+
   i := 1;
   j := 1;
+
   for var k := 1 to 10 do
   begin
+
     while (j < Length(FileData[i])) do
     begin
+
       if ((FileData[k][j] = 'M') or (FileData[k][j] = 'К')) then
       begin
         TempMat[i][k] := FileData[k][j];
       end
+
       else
       begin
         writeln('Невалидный файл');
-        break;
+
+
+        break;    // TO DO
+                  // УБРАТЬ BREAK, так как его использование запрещено
+
+
       end;
+
       j := j + 2;
       i := i + 1;
+
     end;
   end;
+
   for var k := 1 to 10 do
   begin
+
     for var h := 1 to 10 do
     begin
+
       if TempMat[h][k] = 'M' then
       begin
         Pol[h][k] := '0';
       end
+
       else
       begin
         if TempMat[h][k] = 'К' then
           Pol[h][k] := '1';
       end;
     end;
+
   end;
+
   result := Pol
+
 end;
+
+procedure ClearScreen;
+var
+  stdout: THandle;
+  csbi: TConsoleScreenBufferInfo;
+  ConsoleSize: DWORD;
+  NumWritten: DWORD;
+  Origin: TCoord;
+begin
+  stdout := GetStdHandle(STD_OUTPUT_HANDLE);
+  Win32Check(stdout<>INVALID_HANDLE_VALUE);
+  Win32Check(GetConsoleScreenBufferInfo(stdout, csbi));
+  ConsoleSize := csbi.dwSize.X * csbi.dwSize.Y;
+  Origin.X := 0;
+  Origin.Y := 0;
+  Win32Check(FillConsoleOutputCharacter(stdout, ' ', ConsoleSize, Origin,
+    NumWritten));
+  Win32Check(FillConsoleOutputAttribute(stdout, csbi.wAttributes, ConsoleSize, Origin,
+    NumWritten));
+  Win32Check(SetConsoleCursorPosition(stdout, Origin));
+end;
+
 
 procedure help_table(var for_letters: TMASSTR);                  // для считывания
 var                                                              // индексов букв
   letter: char;
+
 begin
   letter := 'А';
+
   for i := 1 to 10 do
   begin
+
     if letter = 'Й' then
     begin
       letter := 'К';
     end;
+
     lettersро[i] := letter;
     letter := Chr(Ord(letter) + 1);
+
   end;
 
   letter := '1';
+
   for i := 11 to 20 do
   begin
+
     if letter = ':' then
     begin
       lettersро[i] := '10';
     end
+
     else
     begin
       lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
+
   end;
+
   letter := 'а';
+
   for i := 21 to 30 do
   begin
+
     if letter = 'й' then
     begin
       lettersро[i] := 'к';
     end
+
     else
     begin
       lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
+
   end;
 end;
 
@@ -139,14 +203,19 @@ procedure outputMAS(var MAS,MAS2: TMATRIX);            // Выводит мат�
 var
   nomerstr, i, j: integer;
   nomerstolb: char;
+
 begin
   writeln('                ПОЛЕ ПРОТИВНИКА                                    ВАШЕ ПОЛЕ     ');
   writeln('      А   Б   В   Г   Д   Е   Ж   З   И   К          А   Б   В   Г   Д   Е   Ж   З   И   К');
   writeln('   ------------------------------------------     ------------------------------------------');
+
   nomerstr := 1;
+
   for i := 1 to 10 do
   begin
+
     write(nomerstr:3, ' |');
+
     for j := 1 to 10 do
     begin
       write(MAS[i, j]:2, ' |');
@@ -155,6 +224,7 @@ begin
     write('  ');
 
     write(nomerstr:3, ' |');
+
     for j := 1 to 10 do
     begin
       write(MAS2[i, j]:2, ' |');
@@ -163,17 +233,11 @@ begin
     inc(nomerstr);
     writeln;
     writeln('   ------------------------------------------     ------------------------------------------');
+
   end;
   writeln;
   writeln;
   writeln;
-  writeln;
-end;
-
-procedure clean_console;
-var i:integer;
-begin
-  for i := 1 to 30 do
   writeln;
 end;
 
@@ -186,50 +250,64 @@ var                                                           // и отобор
 begin
   writeln('Введите координаты выстрела : (Пример  Д-1)');
   readln(shot);
+  ClearScreen;
   flag1 := true;
   flag2 := true;
   repeatshot := false;
+
   index1 := 0;
   index2 := 0;
+
   for i := 1 to length(shot) do
   begin
+
     for j := 1 to 30 do
     begin
+
       if (shot[i] = lettersро[j]) then
       begin
+
         if flag1 then
         begin
           index1 := j - 20;
           flag1 := false;
+
           if index1 < 0 then
           begin
             index1 := j;
           end;
+
         end
         else if flag2 then
         begin
+
           if (shot[length(shot)] = '0') and (j = 11) then
           begin
             index2 := 10;
             flag2 := false;
           end
+
           else if j = 11 then
           begin
             index2 := 1;
             flag2 := false;
           end
+
           else
           begin
             index2 := j - 10;
             flag2 := false;
           end;
+
         end;
       end;
     end;
   end;
+
   // writeln(index1, ' ', index2);
   if (field_with_boats[index2, index1] <> 'К') and
     (field_with_boats[index2, index1] <> 'X') then
+
   begin
     field[index2, index1] := '*';
     field_with_boats[index2, index1] := '*';
@@ -238,12 +316,14 @@ begin
     outputMAS(field,other_field_with_boats);
     writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
     readln;
-    clean_console;
+    ClearScreen;
     writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
     readln;
   end
+
   else
   begin
+
     if field_with_boats[index2, index1] = 'X' then
     begin
       onemoreshot := false;
@@ -252,10 +332,11 @@ begin
 
       writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
       readln;
-    clean_console;
+    ClearScreen;
     writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
     readln;
     end
+
     else
     begin
       field[index2, index1] := 'X';
@@ -266,43 +347,56 @@ begin
       outputMAS(field,other_field_with_boats);
       writeln('Вы стреляете ещё раз');
     end;
+
   end;
 end;
 
 
-
 begin
+
   help_table(lettersро);
+
   writeln('Краткое описание : ');
   writeln('Игра - Морской Бой');
   writeln('1. Введите координаты выстрела(Буква вводится на русском языке');
   writeln('2. Попадание засчитывается если вы попали во вражеский корабль(X), если не попали(*) ');
   writeln('3. Игра продолжается до того момента, пока не будут уничтожены все вражеские(ваши) корабли');
   writeln('Приятной игры!');
+
   flag := true;
   repeatshot := true;
+
   writeln('---------------------------------------------------------------------');
+
  // writeln('Начало игры!');
  // field1_with_boats := IfFileValid(boats2);
   writeln('просим сесть за компьютер игрока номер 1');
   writeln('нажмите Enter для начала игры');
+
   readln;
+  ClearScreen;
   while flag do
   begin
     writeln('Ход игрока Номер 1');
     repeatshot := true;
+
     while repeatshot do
     begin
+      ClearScreen;
       outputMAS(field2, field1_with_boats);
       show_war(field2, field2_with_boats, field1_with_boats, repeatshot);
     end;
+
     writeln('Ход игрока Номер 2');
     repeatshot := true;
+
     while repeatshot do
     begin
+      ClearScreen;
       outputMAS(field1, field2_with_boats);
       show_war(field1, field1_with_boats, field1_with_boats, repeatshot);
     end;
+
   end;
   readln;
 
