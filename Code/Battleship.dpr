@@ -13,6 +13,7 @@ type
   TMATRIX = array [1 .. 10, 1 .. 10] of string;
   TMASSTR = array [1 .. 40] of string;
   Str = Array [1 .. 10] of string;
+  Pole = Array [1 .. 10, 1 .. 10] of string;
 
 var
   field1, field2: TMATRIX;
@@ -45,18 +46,20 @@ var
   flag1, flag2, flag, repeatshot: boolean;
   inputfile: textfile;
 
-function IfFileValid(FileName: string): TMATRIX;
+
+function IfFileValid(FileName: string): Pole;
 var
   f: textfile;
   FileData: Str;
   i, j: integer;
   TempMat: array [1 .. 10, 1 .. 10] of char;
-  Pol: TMATRIX;
+  Pol: Pole;
 
 begin
 
-  AssignFile(f, FileName + '.txt');
+  AssignFile(f, FileName);
   Reset(f);
+
   i := 1;
 
   while (not EOF(f)) do
@@ -65,55 +68,44 @@ begin
     i := i + 1;
   end;
 
-  i := 1;
-  j := 1;
-
-  for var k := 1 to 10 do
+  for var h := 1 to Length(FileData) do
   begin
 
-    while (j < Length(FileData[i])) do
+    for var k := 1 to Length(FileData[h]) do
     begin
-
-      if ((FileData[k][j] = 'M') or (FileData[k][j] = 'К')) then
-      begin
-        TempMat[i][k] := FileData[k][j];
-      end
-
-      else
-      begin
-        writeln('Невалидный файл');
-
-
-        break;    // TO DO
-                  // УБРАТЬ BREAK, так как его использование запрещено
-
-
-      end;
-
-      j := j + 2;
-      i := i + 1;
-
+      if FileData[h][k]=' ' then
+      delete(FileData[h], k, 1);
     end;
+
   end;
 
-  for var k := 1 to 10 do
+  for var l := 1 to 10 do
   begin
 
-    for var h := 1 to 10 do
+    for var g := 1 to Length(FileData[l]) do
     begin
 
-      if TempMat[h][k] = 'M' then
-      begin
-        Pol[h][k] := '0';
-      end
+      case FileData[l][g] of
+        'М':
+        begin
+          Pol[l][g]:='0';
+        end;
 
-      else
-      begin
-        if TempMat[h][k] = 'К' then
-          Pol[h][k] := '1';
+        'К':
+        begin
+          Pol[l][g]:='1';
+        end;
+
+        else
+
+        begin
+          Writeln('Некорректно введенный файл!');
+          readln;
+          break;
+        end;
+
       end;
     end;
-
   end;
 
   result := Pol
