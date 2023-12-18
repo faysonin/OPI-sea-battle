@@ -235,114 +235,280 @@ begin
   writeln;
 end;
 
-procedure show_war(var field, field_with_boats, other_field_with_boats: TMATRIX;var onemoreshot: boolean);                                  // Процедура для стрельбы
-var                                                           // и отоборажение выстрелов и попаданий на матрице
+procedure check_kill(var field, field_with_boats: TMATRIX;  var index1, index2: integer);
+var
+  l, m, n, p, k, i, j, counter1, counter2, f_index2, f_index1,
+    prev_counter: integer;
+  flag1, flag_check1, flag_check2, flag2, pos_flag, kill_flag, f1, f2, f3,
+    f4: boolean;
+  s: string;
+begin
+  f_index2 := index2;
+  f_index1 := index1;
+  m := 1;
+  n := 1;
+  p := 1;
+  k := 1;
+  f1 := true;
+  f2 := true;
+  f3 := true;
+  f4 := true;
+  flag_check2 := false;
+  flag_check1 := true;
+  if field_with_boats[index2, index1] = 'Р' then
+  begin
+    if index2 = 10 then
+    begin
+      f1 := false;
+      m := 0;
+    end;
+    if index2 = 1 then
+    begin
+      f2 := false;
+      n := 0;
+    end;
+    if index1 = 10 then
+    begin
+      f3 := false;
+      p := 0;
+    end;
+    if index1 = 1 then
+    begin
+      f4 := false;
+      k := 0;
+    end;
+
+    if ((field_with_boats[index2 + m, index1] = 'К') or
+      (field_with_boats[index2 + m, index1] = 'Р')) and f1 then
+    begin
+      s := 'down'
+    end
+    else if ((field_with_boats[index2 - n, index1] = 'Р') or
+      (field_with_boats[index2 - n, index1] = 'К')) and f2 then
+    begin
+      s := 'up'
+    end
+    else if ((field_with_boats[index2, index1 + p] = 'Р') or
+      (field_with_boats[index2, index1 + p] = 'К')) and f3 then
+    begin
+      s := 'right'
+    end
+    else if ((field_with_boats[index2, index1 - k] = 'К') or
+      (field_with_boats[index2, index1 - k] = 'Р')) and f4 then
+    begin
+      s := 'left';
+    end;
+    counter1 := 0;
+    counter2 := 0;
+    prev_counter := 0;
+    flag1 := true;
+    if (s = 'right') or (s = 'left') then
+    begin
+      while flag1 do
+      begin
+        if ((field_with_boats[index2, index1 + counter1] <> 'М') and
+          (field_with_boats[index2, index1 + counter1] <> '*')) and
+          (index1 + counter1 < 10) and flag_check1 then
+        begin
+          inc(counter1);
+        end
+        else if flag_check1 then
+        begin
+          flag_check1 := false;
+          flag_check2 := true;
+        end;
+        if ((field_with_boats[index2, index1 - counter2] <> 'М') and
+          (field_with_boats[index2, index1 - counter2] <> '*')) and
+          (index1 - counter2 > 1) and flag_check2 then
+        begin
+          inc(counter2);
+        end
+        else if flag_check2 then
+        begin
+          flag_check2 := false;
+        end;
+        if (field_with_boats[index2, index1 + counter1] <> 'К') and
+          (field_with_boats[index2, index1 - counter2] <> 'К') and
+          (field_with_boats[index2, index1 + counter1] <> 'Р') and
+          (field_with_boats[index2, index1 - counter2] <> 'Р') then
+        begin
+          flag1 := false;
+        end;
+
+end;
+    end
+    else if (s = 'up') or (s = 'down') then
+    begin
+      while flag1 do
+      begin
+        if ((field_with_boats[index2 + counter1, index1] <> 'М') and
+          (field_with_boats[index2 + counter1, index1] <> '*')) and
+          (index2 + counter1 < 10) and flag_check1 then
+        begin
+          inc(counter1);
+        end
+        else if flag_check1 then
+        begin
+          flag_check2 := true;
+          flag_check1 := false;
+        end;
+        if ((field_with_boats[index2 - counter2, index1] <> 'М') and
+          (field_with_boats[index2 - counter2, index1] <> '*')) and
+          (index2 - counter2 > 1) and flag_check2 then
+        begin
+          inc(counter2);
+        end
+        else if flag_check2 then
+
+        begin
+          flag_check2 := false;
+        end;
+        if (field_with_boats[index2 + counter1, index1] <> 'К') and
+          (field_with_boats[index2 - counter2, index1] <> 'К') and
+          (field_with_boats[index2 + counter1, index1] <> 'Р') and
+          (field_with_boats[index2 - counter2, index1] <> 'Р') then
+        begin
+          flag1 := false;
+        end;
+      end;
+    end;
+    kill_flag := true;
+    if (s = 'right') or (s = 'left') then
+    begin
+      for i := 1 to counter1 + counter2 - 1 do
+      begin
+        if field_with_boats[index2, index1 + i - counter2] <> 'Р' then
+        begin
+          kill_flag := false;
+        end;
+      end;
+      if kill_flag then
+      begin
+        for i := 1 to counter1 + counter2 - 1 do
+        begin
+          field_with_boats[index2, index1 + i - counter2] := 'У';
+          field[index2, index1 + i - counter2] := 'У';
+        end;
+      end;
+    end
+    else
+    begin
+      for i := 1 to counter1 + counter2 - 1 do
+      begin
+        if field_with_boats[index2 + i - counter2, index1] <> 'Р' then
+        begin
+          kill_flag := false;
+        end;
+      end;
+      if kill_flag then
+      begin
+        for i := 1 to counter1 + counter2 - 1 do
+        begin
+          field_with_boats[index2 + i - counter2, index1] := 'У';
+          field[index2 + i - counter2, index1] := 'У';
+        end;
+      end;
+      if counter2 = counter1 then
+      begin
+        field_with_boats[index2, index1] := 'У';
+        field[index2, index1] := 'У';
+      end;
+    end;
+  end;
+end;
+
+procedure show_war(var field, field_with_boats, other_field_with_boats: TMATRIX; var onemoreshot: boolean; var index1, index2: integer);
+// Процедура для стрельбы
+var // и отоборажение выстрелов и попаданий на матрице
   letter: char;
   shot: string;
   flag1, flag2: boolean;
-  i, j, index1, index2: integer;
+  i, j, m, n, p, k: integer;
 begin
   writeln('Введите координаты выстрела : (Пример  Д-1)');
-  readln(shot);
-  ClearScreen;
+  Readln(shot);
   flag1 := true;
   flag2 := true;
   repeatshot := false;
-
   index1 := 0;
   index2 := 0;
-
-  for i := 1 to length(shot) do
+  for i := 1 to Length(shot) do
   begin
-
     for j := 1 to 30 do
     begin
-
       if (shot[i] = lettersро[j]) then
       begin
-
         if flag1 then
         begin
           index1 := j - 20;
           flag1 := false;
-
           if index1 < 0 then
           begin
             index1 := j;
           end;
-
         end
         else if flag2 then
         begin
-
-          if (shot[length(shot)] = '0') and (j = 11) then
+          if (shot[Length(shot)] = '0') and (j = 11) then
           begin
             index2 := 10;
             flag2 := false;
           end
-
           else if j = 11 then
           begin
             index2 := 1;
             flag2 := false;
           end
-
           else
           begin
             index2 := j - 10;
             flag2 := false;
           end;
-
         end;
       end;
     end;
   end;
-
   // writeln(index1, ' ', index2);
   if (field_with_boats[index2, index1] <> 'К') and
-    (field_with_boats[index2, index1] <> 'X') then
-
+    (field_with_boats[index2, index1] <> 'Р') and
+    (field_with_boats[index2, index1] <> 'У') then
   begin
     field[index2, index1] := '*';
     field_with_boats[index2, index1] := '*';
 
 
-    outputMAS(field,other_field_with_boats);
-    writeln('Ход переходит другом игроку, нажмите "Enter" для сокрытия поля');
-    readln;
-    ClearScreen;
-    writeln('Просим сесть за компьютер другого игрока и нажать "Enter" для продолжения');
-    readln;
+outputMAS(field, other_field_with_boats);
+    writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
+    Readln;
+    clearscreen;
+    writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
+    Readln;
   end
-
   else
   begin
-
-    if field_with_boats[index2, index1] = 'X' then
+    if (field_with_boats[index2, index1] = 'Р') or
+      (field_with_boats[index2, index1] = 'У') then
     begin
       onemoreshot := false;
-      outputMAS(field,other_field_with_boats);
+      outputMAS(field, other_field_with_boats);
 
-
-      writeln('Ход переходит другом игроку, нажмите "Enter" для сокрытия поля');
-      readln;
-    ClearScreen;
-    writeln('Просим сесть за компьютер другого игрока и нажать "Enter" для продолжения');
-    readln;
+      writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
+      Readln;
+      clearscreen;
+      writeln('просим сесть за компьютер другого игрока и нажать Enter для продолжения');
+      Readln;
     end
-
     else
     begin
-      field[index2, index1] := 'X';
-      field_with_boats[index2, index1] := 'X';
+      field[index2, index1] := 'Р';
+      field_with_boats[index2, index1] := 'Р';
       onemoreshot := true;
-
-
-      outputMAS(field,other_field_with_boats);
-      writeln('Вы стреляете ещё раз.');
+      check_kill(field, field_with_boats, index1, index2);
+      outputMAS(field, other_field_with_boats);
+      writeln('Вы стреляете ещё раз');
     end;
-
   end;
+
 end;
 
 function ships_valid(var MAS: TMATRIX): boolean;
@@ -532,7 +698,7 @@ begin
     begin
       ClearScreen;
       outputMAS(field2, field1_with_boats);
-      show_war(field2, field2_with_boats, field1_with_boats, repeatshot);
+     show_war(field2, field2_with_boats, field1_with_boats, repeatshot,index1,index2);
     end;
 
     writeln('Ход игрока Номер 2.');
@@ -542,7 +708,7 @@ begin
     begin
       ClearScreen;
       outputMAS(field1, field2_with_boats);
-      show_war(field1, field1_with_boats, field1_with_boats, repeatshot);
+      show_war(field1, field1_with_boats, field1_with_boats, repeatshot,index1,index2);
     end;
 
    end;
@@ -553,3 +719,4 @@ begin
   readln;
 
 end.
+
