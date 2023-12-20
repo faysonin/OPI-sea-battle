@@ -18,30 +18,30 @@ type
   boat = array [1 .. 22] of string;
 
 var
-field1, field2: TMATRIX;
-  help_field1, help_field2, field1_with_boats,field2_with_boats:TMATRIX;
+  field1, field2: TMATRIX;
+  help_field1, help_field2, field1_with_boats, field2_with_boats: TMATRIX;
 
   lettersро: TMASSTR;
   i, j, index1, index2: integer;
   letter: char;
-  boat1,boat2: boat;
+  boat1, boat2: boat;
   shot, boats1, boats2, s: string;
   flag1, flag2, flag, repeatshot, blood_flag: boolean;
   inputfile, Player1, Player2: textfile;
   coordin: coord;
   pos_coordin: TMASCOORD;
 
-function IfFileValid(FileName: string): TMatrix;
+function IfFileValid(FileName: string): TMATRIX;
 var
   f: textfile;
   FileData: Str;
   i, j, k: integer;
-  Flag: boolean;
+  flag: boolean;
   TempMat: array [1 .. 10, 1 .. 10] of Ansichar;
-  Pol: Tmatrix;
+  Pol: TMATRIX;
 begin
-  Flag:=True;
-  AssignFile(f, FileName +'.TXT', CP_UTF8);
+  flag := True;
+  AssignFile(f, FileName + '.TXT', CP_UTF8);
   Reset(f);
   i := 1;
   while (not EOF(f)) do
@@ -51,68 +51,68 @@ begin
   end;
   for var h := 1 to Length(FileData) do
   begin
-    k:=1;
-    while k<=Length(FileData[h]) do
+    k := 1;
+    while k <= Length(FileData[h]) do
     begin
-      if FileData[h][k]=' ' then
+      if FileData[h][k] = ' ' then
       begin
-      delete(FileData[h], k, 1);
+        delete(FileData[h], k, 1);
       end;
-      k:=k+1;
+      k := k + 1;
     end;
   end;
-  for var t:= 1 to Length(FileData) do
-    begin
-      for var h := 1 to Length(FileData[t]) do
-        begin
-          FileData[t][h]:=(UpperCase(FileData[t][h])[1]);
-        end;
-    end;
-  if Length(FileData)=10 then
+  for var t := 1 to Length(FileData) do
   begin
-  for var l := 1 to 10 do
-   begin
-    if Length(FileData[l])=Length(Pol[l]) then
+    for var h := 1 to Length(FileData[t]) do
     begin
-    for var g := 1 to Length(FileData[l]) do
-     begin
-      case FileData[l][g] of
-        'М':
-        begin
-          Pol[l][g]:='М';
-        end;
-        'К':
-        begin
-          Pol[l][g]:='К';
-        end;
-        else
-        begin
-          Writeln('Некорректно введенный файл!');
-          readln;
-          Flag:=false;
-          break;
-        end;
-      end;
-     end;
-    end
-    else
-    begin
-      Writeln('Некорректно введенный файл!');
-      readln;
-      Flag:=false;
-      break;
+      FileData[t][h] := (UpperCase(FileData[t][h])[1]);
     end;
-   end;
+  end;
+  if Length(FileData) = 10 then
+  begin
+    for var l := 1 to 10 do
+    begin
+      if Length(FileData[l]) = Length(Pol[l]) then
+      begin
+        for var g := 1 to Length(FileData[l]) do
+        begin
+          case FileData[l][g] of
+            'М':
+              begin
+                Pol[l][g] := 'М';
+              end;
+            'К':
+              begin
+                Pol[l][g] := 'К';
+              end;
+          else
+            begin
+              Writeln('Некорректно введенный файл!');
+              Readln;
+              flag := false;
+              break;
+            end;
+          end;
+        end;
+      end
+      else
+      begin
+        Writeln('Некорректно введенный файл!');
+        Readln;
+        flag := false;
+        break;
+      end;
+    end;
   end
   else
   begin
     Writeln('Некорректно введенный файл!');
-    readln;
-    Flag:=false;
+    Readln;
+    flag := false;
   end;
 
-  if Flag then
-  result := Pol
+  if flag then
+    result := Pol
 end;
 
 procedure ClearScreen;
@@ -342,7 +342,7 @@ begin
   begin
     if pos_coordin[1] = 'right' then
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 1 to coordin[1] do
       begin
         if field_with_boats[1, i] <> 'Р' then
@@ -365,7 +365,7 @@ begin
     end
     else
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 1 to coordin[1] do
       begin
         if field_with_boats[i, 1] <> 'Р' then
@@ -391,7 +391,7 @@ begin
   begin
     if pos_coordin[2] = 'left' then
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 10 downto 10 - coordin[2] + 1 do
       begin
         if field_with_boats[1, i] <> 'Р' then
@@ -414,7 +414,7 @@ begin
     end
     else
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 1 to coordin[2] do
       begin
         if field_with_boats[10, i] <> 'Р' then
@@ -440,7 +440,7 @@ begin
   begin
     if pos_coordin[3] = 'left' then
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 10 downto 10 - coordin[3] + 1 do
       begin
         if field_with_boats[10, i] <> 'Р' then
@@ -463,7 +463,7 @@ begin
     end
     else
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 10 downto 10 - coordin[3] + 1 do
       begin
         if field_with_boats[i, 10] <> 'Р' then
@@ -489,7 +489,7 @@ begin
   begin
     if pos_coordin[4] = 'right' then
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 1 to coordin[4] do
       begin
         if field_with_boats[10, i] <> 'Р' then
@@ -512,7 +512,7 @@ begin
     end
     else
     begin
-      blood_flag := true;
+      blood_flag := True;
       for i := 10 downto 10 - coordin[4] + 1 do
       begin
         if field_with_boats[i, 10] <> 'Р' then
@@ -557,7 +557,29 @@ begin
 
     for j := 1 to 10 do
     begin
-      write(MAS[i, j]:2, ' |');
+      if MAS[i, j] = 'Р' then
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$06);
+        write(MAS[i, j]:2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        write(' |')
+      end
+      else if MAS[i, j] = 'У' then
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+          foreground_red);
+        write(MAS[i, j]:2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        write(' |')
+      end
+      else
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
+        write(MAS[i, j]:2);
+
+        write(' |');
+      end;
+
     end;
 
     write('  ');
@@ -566,7 +588,52 @@ begin
 
     for j := 1 to 10 do
     begin
-      write(MAS2[i, j]:2, ' |');
+      if MAS2[i, j] = 'Р' then
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$06);
+        write(MAS2[i, j]:2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        write(' |')
+      end
+      else if MAS2[i, j] = 'У' then
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+          foreground_red);
+        write(MAS2[i, j]:2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        write(' |')
+      end
+      else if MAS2[i, j] = 'К' then
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+          foreground_green);
+        write(MAS2[i, j]:2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        write(' |')
+      end
+      else if MAS2[i, j] = 'М' then
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+          foreground_blue);
+        write(MAS2[i, j]:2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        write(' |')
+      end
+      else if MAS2[i, j] = '*' then
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+          foreground_blue);
+        write(MAS2[i, j]:2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        write(' |')
+      end
+      else
+      begin
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
+        write(MAS2[i, j]:2);
+
+        write(' |');
+      end;
     end;
 
     inc(nomerstr);
@@ -595,12 +662,12 @@ begin
   n := 1;
   p := 1;
   k := 1;
-  f1 := true;
-  f2 := true;
-  f3 := true;
-  f4 := true;
+  f1 := True;
+  f2 := True;
+  f3 := True;
+  f4 := True;
   flag_check2 := false;
-  flag_check1 := true;
+  flag_check1 := True;
   if field_with_boats[index2, index1] = 'Р' then
   begin
     if index2 = 10 then
@@ -647,7 +714,7 @@ begin
     counter1 := 0;
     counter2 := 0;
     prev_counter := 0;
-    flag1 := true;
+    flag1 := True;
     if (s = 'right') or (s = 'left') then
     begin
       while flag1 do
@@ -661,7 +728,7 @@ begin
         else if flag_check1 then
         begin
           flag_check1 := false;
-          flag_check2 := true;
+          flag_check2 := True;
         end;
         if ((field_with_boats[index2, index1 - counter2] <> 'М') and
           (field_with_boats[index2, index1 - counter2] <> '*')) and
@@ -695,7 +762,7 @@ begin
         end
         else if flag_check1 then
         begin
-          flag_check2 := true;
+          flag_check2 := True;
           flag_check1 := false;
         end;
         if ((field_with_boats[index2 - counter2, index1] <> 'М') and
@@ -718,7 +785,7 @@ begin
         end;
       end;
     end;
-    kill_flag := true;
+    kill_flag := True;
     if (s = 'right') or (s = 'left') then
     begin
       for i := 1 to counter1 + counter2 - 1 do
@@ -775,8 +842,8 @@ var // и отоборажение выстрелов и попаданий на
 begin
   Writeln('Введите координаты выстрела : (Пример  Д-1)');
   Readln(shot);
-  flag1 := true;
-  flag2 := true;
+  flag1 := True;
+  flag2 := True;
   repeatshot := false;
   index1 := 0;
   index2 := 0;
@@ -848,37 +915,40 @@ begin
     else
     begin
       if ((index2 = 1) and (index1 = 1)) and
-        (((field_with_boats[1, 2] <> 'Р') and (field_with_boats[1, 2] <> 'К')) and
-        ((field_with_boats[2, 1] <> 'Р') and (field_with_boats[2, 1] <> 'К')))
-      then
+        (((field_with_boats[1, 2] <> 'Р') and (field_with_boats[1, 2] <> 'К'))
+        and ((field_with_boats[2, 1] <> 'Р') and (field_with_boats[2,
+        1] <> 'К'))) then
       begin
         field[index2, index1] := 'У';
         field_with_boats[index2, index1] := 'У';
-        onemoreshot := true;
+        onemoreshot := True;
       end
       else if ((index2 = 1) and (index1 = 10)) and
-      (((field_with_boats[1, 9] <> 'Р') and (field_with_boats[1, 9] <> 'К')) and
-        ((field_with_boats[2, 10] <> 'Р') and (field_with_boats[2, 10] <> 'К'))) then
+        (((field_with_boats[1, 9] <> 'Р') and (field_with_boats[1, 9] <> 'К'))
+        and ((field_with_boats[2, 10] <> 'Р') and (field_with_boats[2,
+        10] <> 'К'))) then
       begin
-       field[index2, index1] := 'У';
+        field[index2, index1] := 'У';
         field_with_boats[index2, index1] := 'У';
-        onemoreshot := true;
+        onemoreshot := True;
       end
       else if ((index2 = 10) and (index1 = 10)) and
-      (((field_with_boats[9, 10] <> 'Р') and (field_with_boats[9, 10] <> 'К')) and
-        ((field_with_boats[10, 9] <> 'Р') and (field_with_boats[10, 9] <> 'К'))) then
+        (((field_with_boats[9, 10] <> 'Р') and (field_with_boats[9, 10] <> 'К'))
+        and ((field_with_boats[10, 9] <> 'Р') and (field_with_boats[10,
+        9] <> 'К'))) then
       begin
         field[index2, index1] := 'У';
         field_with_boats[index2, index1] := 'У';
-        onemoreshot := true;
+        onemoreshot := True;
       end
       else if ((index2 = 10)) and ((index1 = 1)) and
-      (((field_with_boats[1, 9] <> 'Р') and (field_with_boats[1, 9] <> 'К')) and
-        ((field_with_boats[10, 2] <> 'Р') and (field_with_boats[10, 2] <> 'К'))) then
+        (((field_with_boats[1, 9] <> 'Р') and (field_with_boats[1, 9] <> 'К'))
+        and ((field_with_boats[10, 2] <> 'Р') and (field_with_boats[10,
+        2] <> 'К'))) then
       begin
         field[index2, index1] := 'У';
         field_with_boats[index2, index1] := 'У';
-        onemoreshot := true;
+        onemoreshot := True;
       end
       else
       begin
@@ -887,8 +957,8 @@ begin
         field[index2, index1] := 'Р';
         field_with_boats[index2, index1] := 'Р';
         check_coord(coordin, field_with_boats, field, help_field_1, s, changed);
-        onemoreshot := true;
-        new_flag := true;
+        onemoreshot := True;
+        new_flag := True;
         for i := 1 to 10 do
         begin
           for j := 1 to 10 do
@@ -902,7 +972,7 @@ begin
         if new_flag then
         begin
           check_kill(field, field_with_boats, index1, index2);
-          onemoreshot := true;
+          onemoreshot := True;
         end;
       end;
       outputMAS(field, other_field_with_boats);
@@ -1089,17 +1159,16 @@ begin
 
   if (ship_deck1 = 24) and (ship_deck2 = 3) and (ship_deck3 = 2) and
     (ship_deck4 = 1) and diagonal_flag then
-    ships_valid := true;
+    ships_valid := True;
 end;
 
 begin
 
   help_table(lettersро);
   field1_with_boats := IfFileValid('Player1');
-  field2_with_boats :=  IfFileValid('Player2');
+  field2_with_boats := IfFileValid('Player2');
 
   if (ships_valid(field1_with_boats) and ships_valid(field2_with_boats)) then
-
   begin
     Writeln('Краткое описание: ');
     Writeln('Игра - Морской Бой.');
@@ -1107,9 +1176,8 @@ begin
     Writeln('2. Попадание засчитывается если вы попали во вражеский корабль(Р), если не попали(*) ');
     Writeln('3. Игра продолжается до того момента, пока не будут уничтожены все вражеские(ваши) корабли.');
     Writeln('Приятной игры!');
-
-    flag := true;
-    repeatshot := true;
+    flag := True;
+    repeatshot := True;
 
     Writeln('---------------------------------------------------------------------');
 
@@ -1122,7 +1190,7 @@ begin
     while flag do
     begin
       Writeln('Ход игрока Номер 1');
-      repeatshot := true;
+      repeatshot := True;
 
       while repeatshot do
       begin
@@ -1134,7 +1202,7 @@ begin
       end;
 
       Writeln('Ход игрока Номер 2.');
-      repeatshot := true;
+      repeatshot := True;
 
       while repeatshot do
       begin
