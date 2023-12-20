@@ -114,7 +114,32 @@ begin
   if flag then
     result := Pol
 end;
+procedure coord_valid(var shot:string);
+var
+ i:integer;
+ bufer:string;
+ flag:boolean;
+begin
+  flag:=false;
+  repeat
+    repeat
+      readln(shot);
+    until not(shot='');
+    bufer:='';
+    for i:=1 to length(shot) do
+      begin
+        if shot[i]<>' ' then
+        bufer:=bufer+shot[i];
+      end;
+    bufer:=ansiuppercase(bufer);
+    //writeln(ord(bufer[1]));
+    if (ord(bufer[1])<>1049) and (ord(bufer[1])<1051) and (ord(bufer[1])>1039) and (bufer[2]='-') and (((length(bufer)=3)and(bufer[3] in ['1'..'9']))or((length(bufer)=4)and(bufer[3]='1')and(bufer[4]='0')))then
+    flag:=true
+    else write('введите координаты заново: ');
 
+  until flag=true;
+  shot:=bufer;
+end;
 procedure ClearScreen;
 var
   stdout: THandle;
@@ -648,8 +673,8 @@ procedure check_kill(var field, field_with_boats: TMATRIX;
 var
   l, m, n, p, k, i, j, counter1, counter2, f_index2, f_index1,
     prev_counter: integer;
-  flag1, flag_check1, flag_check2, flag2, pos_flag, kill_flag, f1, f2, f3,
-    f4,extra_flag: boolean;
+  flag1, flag_check1, flag_check2, flag2, pos_flag, kill_flag, f1, f2, f3, f4,
+    extra_flag: boolean;
   s: string;
 begin
   f_index2 := index2;
@@ -664,7 +689,7 @@ begin
   f4 := True;
   flag_check2 := false;
   flag_check1 := True;
-  extra_flag:=true;
+  extra_flag := True;
   if field_with_boats[index2, index1] = 'Р' then
   begin
     if index2 = 10 then
@@ -692,25 +717,25 @@ begin
       (field_with_boats[index2 + m, index1] = 'Р')) and f1 then
     begin
       s := 'down';
-      extra_flag:=false;
+      extra_flag := false;
     end
     else if ((field_with_boats[index2 - n, index1] = 'Р') or
       (field_with_boats[index2 - n, index1] = 'К')) and f2 then
     begin
       s := 'up';
-      extra_flag:=false;
+      extra_flag := false;
     end
     else if ((field_with_boats[index2, index1 + p] = 'Р') or
       (field_with_boats[index2, index1 + p] = 'К')) and f3 then
     begin
       s := 'right';
-      extra_flag:=false;
+      extra_flag := false;
     end
     else if ((field_with_boats[index2, index1 - k] = 'К') or
       (field_with_boats[index2, index1 - k] = 'Р')) and f4 then
     begin
       s := 'left';
-      extra_flag:=false;
+      extra_flag := false;
     end;
     counter1 := 0;
     counter2 := 0;
@@ -853,7 +878,7 @@ begin
     Writeln('             ---------      ');
     Writeln('            /         \     ');
     Writeln('            | Выиграл |    ');
-    Writeln('            |   ', player, '     |    ');
+    Writeln('            |    ', player, '     |    ');
     Writeln('            \  игрок  /     ');
     Writeln('             ---------      ');
     Writeln('                |||         ');
@@ -876,7 +901,7 @@ var // и отоборажение выстрелов и попаданий на
   i, j, m, n, p, k: integer;
 begin
   Writeln('Введите координаты выстрела : (Пример  Д-1)');
-  Readln(shot);
+  coord_valid(shot);
   flag1 := True;
   flag2 := True;
   repeatshot := false;
@@ -1234,7 +1259,10 @@ begin
         outputMAS(field2, field1_with_boats);
         show_war(field2, field2_with_boats, field1_with_boats, help_field1,
           help_field2, repeatshot, index1, index2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+          FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY);
         GameWinner(1, field2);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
       end;
       if flag <> false then
       begin
@@ -1248,7 +1276,10 @@ begin
           outputMAS(field1, field2_with_boats);
           show_war(field1, field1_with_boats, field1_with_boats, help_field1,
             help_field2, repeatshot, index1, index2);
-            GameWinner(2, field1);
+          SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+          FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY);
+          GameWinner(2, field1);
+          SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
         end;
       end;
     end;
