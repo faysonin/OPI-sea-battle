@@ -623,14 +623,6 @@ begin
         SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
         write(' |')
       end
-      else if MAS2[i, j] = '*' then
-      begin
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
-          foreground_blue);
-        write(MAS2[i, j]:2);
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
-        write(' |')
-      end
       else
       begin
         SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
