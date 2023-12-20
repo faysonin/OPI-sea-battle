@@ -334,10 +334,10 @@ begin
       pos_coordin[4] := s;
     end;
   end;
-  for i := 1 to 4 do
-  begin
+  { for i := 1 to 4 do
+    begin
     Writeln(coorrdin[i], ' ', pos_coordin[i]);
-  end;
+    end; }
   if coordin[1] <> 0 then
   begin
     if pos_coordin[1] = 'right' then
@@ -544,11 +544,11 @@ var
   nomerstolb: char;
 
 begin
-  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),foreground_red);
+  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground_red);
   Write('                ПОЛЕ ПРОТИВНИКА                                    ');
-  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),foreground_green);
-  writeln('ВАШЕ ПОЛЕ     ');
-  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$0F);
+  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground_green);
+  Writeln('ВАШЕ ПОЛЕ     ');
+  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $0F);
   Writeln('      А   Б   В   Г   Д   Е   Ж   З   И   К          А   Б   В   Г   Д   Е   Ж   З   И   К');
   Writeln('   ------------------------------------------     ------------------------------------------');
 
@@ -563,9 +563,9 @@ begin
     begin
       if MAS[i, j] = 'Р' then
       begin
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$06);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $06);
         write(MAS[i, j]:2);
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
         write(' |')
       end
       else if MAS[i, j] = 'У' then
@@ -573,7 +573,7 @@ begin
         SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
           foreground_red);
         write(MAS[i, j]:2);
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
         write(' |')
       end
       else
@@ -594,9 +594,9 @@ begin
     begin
       if MAS2[i, j] = 'Р' then
       begin
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$06);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $06);
         write(MAS2[i, j]:2);
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
         write(' |')
       end
       else if MAS2[i, j] = 'У' then
@@ -604,7 +604,7 @@ begin
         SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
           foreground_red);
         write(MAS2[i, j]:2);
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
         write(' |')
       end
       else if MAS2[i, j] = 'К' then
@@ -612,7 +612,7 @@ begin
         SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
           foreground_green);
         write(MAS2[i, j]:2);
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
         write(' |')
       end
       else if MAS2[i, j] = 'М' then
@@ -620,7 +620,7 @@ begin
         SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
           foreground_blue);
         write(MAS2[i, j]:2);
-        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$F);
+        SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $F);
         write(' |')
       end
       else
@@ -649,7 +649,7 @@ var
   l, m, n, p, k, i, j, counter1, counter2, f_index2, f_index1,
     prev_counter: integer;
   flag1, flag_check1, flag_check2, flag2, pos_flag, kill_flag, f1, f2, f3,
-    f4: boolean;
+    f4,extra_flag: boolean;
   s: string;
 begin
   f_index2 := index2;
@@ -664,6 +664,7 @@ begin
   f4 := True;
   flag_check2 := false;
   flag_check1 := True;
+  extra_flag:=true;
   if field_with_boats[index2, index1] = 'Р' then
   begin
     if index2 = 10 then
@@ -690,22 +691,26 @@ begin
     if ((field_with_boats[index2 + m, index1] = 'К') or
       (field_with_boats[index2 + m, index1] = 'Р')) and f1 then
     begin
-      s := 'down'
+      s := 'down';
+      extra_flag:=false;
     end
     else if ((field_with_boats[index2 - n, index1] = 'Р') or
       (field_with_boats[index2 - n, index1] = 'К')) and f2 then
     begin
-      s := 'up'
+      s := 'up';
+      extra_flag:=false;
     end
     else if ((field_with_boats[index2, index1 + p] = 'Р') or
       (field_with_boats[index2, index1 + p] = 'К')) and f3 then
     begin
-      s := 'right'
+      s := 'right';
+      extra_flag:=false;
     end
     else if ((field_with_boats[index2, index1 - k] = 'К') or
       (field_with_boats[index2, index1 - k] = 'Р')) and f4 then
     begin
       s := 'left';
+      extra_flag:=false;
     end;
     counter1 := 0;
     counter2 := 0;
@@ -817,13 +822,47 @@ begin
           field[index2 + i - counter2, index1] := 'У';
         end;
       end;
-      if counter2 = counter1 then
+      if (counter2 = counter1) and extra_flag then
       begin
         field_with_boats[index2, index1] := 'У';
         field[index2, index1] := 'У';
       end;
     end;
   end;
+end;
+
+Procedure GameWinner(player: integer; var field_with_boats: TMATRIX);
+var
+  sum, j, k: integer;
+begin
+
+  sum := 0;
+  for i := 1 to 10 do
+  begin
+    for j := 1 to 10 do
+    begin
+      if (field_with_boats[i, j] = 'У') or (field_with_boats[i, j] = 'Р') or
+        (field_with_boats[i, j] = 'К') then
+        sum := sum + 1;
+    end;
+  end;
+  if sum = 20 then
+  begin
+    Writeln;
+    Writeln('                |', player, '|        ');
+    Writeln('             ---------      ');
+    Writeln('            /         \     ');
+    Writeln('            | Выиграл |    ');
+    Writeln('            |   ', player, '     |    ');
+    Writeln('            \  игрок  /     ');
+    Writeln('             ---------      ');
+    Writeln('                |||         ');
+    Writeln('              =======      ');
+    Writeln;
+    flag := false;
+    repeatshot := false;
+  end;
+
 end;
 
 procedure show_war(var field, field_with_boats, other_field_with_boats,
@@ -1195,18 +1234,22 @@ begin
         outputMAS(field2, field1_with_boats);
         show_war(field2, field2_with_boats, field1_with_boats, help_field1,
           help_field2, repeatshot, index1, index2);
+        GameWinner(1, field2);
       end;
-
-      Writeln('Ход игрока Номер 2.');
-      repeatshot := True;
-
-      while repeatshot do
+      if flag <> false then
       begin
-        ClearScreen;
-        ClearScreen;
-        outputMAS(field1, field2_with_boats);
-        show_war(field1, field1_with_boats, field1_with_boats, help_field1,
-          help_field2, repeatshot, index1, index2);
+        Writeln('Ход игрока Номер 2.');
+        repeatshot := True;
+
+        while repeatshot do
+        begin
+          ClearScreen;
+          ClearScreen;
+          outputMAS(field1, field2_with_boats);
+          show_war(field1, field1_with_boats, field1_with_boats, help_field1,
+            help_field2, repeatshot, index1, index2);
+            GameWinner(2, field1);
+        end;
       end;
     end;
   end
