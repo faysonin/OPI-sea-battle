@@ -570,19 +570,19 @@ var
 
 begin
   SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground_red);
-  Write('                ПОЛЕ ПРОТИВНИКА                                    ');
+  Write('                          ПОЛЕ ПРОТИВНИКА                                    ');
   SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), foreground_green);
-  Writeln('ВАШЕ ПОЛЕ     ');
+  Writeln('         ВАШЕ ПОЛЕ     ');
   SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), $0F);
-  Writeln('      А   Б   В   Г   Д   Е   Ж   З   И   К          А   Б   В   Г   Д   Е   Ж   З   И   К');
-  Writeln('   ------------------------------------------     ------------------------------------------');
+  Writeln('               А   Б   В   Г   Д   Е   Ж   З   И   К                  А   Б   В   Г   Д   Е   Ж   З   И   К');
+  Writeln('             ------------------------------------------             ------------------------------------------');
 
   nomerstr := 1;
 
   for i := 1 to 10 do
   begin
 
-    write(nomerstr:3, ' |');
+    write('         ',nomerstr:3, ' |');
 
     for j := 1 to 10 do
     begin
@@ -613,7 +613,7 @@ begin
 
     write('  ');
 
-    write(nomerstr:3, ' |');
+    write('        ',nomerstr:3, ' |');
 
     for j := 1 to 10 do
     begin
@@ -659,7 +659,7 @@ begin
 
     inc(nomerstr);
     Writeln;
-    Writeln('   ------------------------------------------     ------------------------------------------');
+    Writeln('             ------------------------------------------             ------------------------------------------');
 
   end;
   Writeln;
