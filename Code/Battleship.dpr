@@ -544,7 +544,11 @@ var
   nomerstolb: char;
 
 begin
-  Writeln('                ПОЛЕ ПРОТИВНИКА                                    ВАШЕ ПОЛЕ     ');
+  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),foreground_red);
+  Write('                ПОЛЕ ПРОТИВНИКА                                    ');
+  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),foreground_green);
+  writeln('ВАШЕ ПОЛЕ     ');
+  SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),$0F);
   Writeln('      А   Б   В   Г   Д   Е   Ж   З   И   К          А   Б   В   Г   Д   Е   Ж   З   И   К');
   Writeln('   ------------------------------------------     ------------------------------------------');
 
