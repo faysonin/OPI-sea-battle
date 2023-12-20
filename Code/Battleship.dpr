@@ -4,7 +4,6 @@
 {$R *.res}
 
 uses
-
   Windows,
   Messages,
   SysUtils;
@@ -19,102 +18,101 @@ type
   boat = array [1 .. 22] of string;
 
 var
-  field1, field2: TMATRIX;
-  help_field1, help_field2: TMATRIX;
-  field1_with_boats: TMATRIX = (('М', 'М', 'М', 'М', 'К', 'К', 'К', 'К', 'М',
-    'М'), ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
-    ('М', 'К', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
-    ('М', 'К', 'М', 'М', 'М', 'М', 'М', 'К', 'К', 'М'),
-    ('М', 'К', 'М', 'К', 'К', 'К', 'М', 'М', 'М', 'М'),
-    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
-    ('М', 'К', 'М', 'М', 'М', 'К', 'М', 'К', 'К', 'М'),
-    ('М', 'М', 'М', 'М', 'М', 'К', 'М', 'М', 'М', 'М'),
-    ('М', 'М', 'К', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
-    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'К', 'М', 'К'));
-  field2_with_boats: TMATRIX = (('К', 'К', 'М', 'М', 'М', 'М', 'М', 'М', 'М',
-    'К'), ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
-    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
-    ('М', 'М', 'К', 'К', 'К', 'К', 'М', 'М', 'М', 'К'),
-    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'К'),
-    ('К', 'М', 'М', 'К', 'М', 'М', 'М', 'М', 'М', 'К'),
-    ('К', 'М', 'М', 'М', 'М', 'К', 'К', 'К', 'М', 'М'),
-    ('М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М'),
-    ('М', 'М', 'М', 'М', 'К', 'М', 'М', 'М', 'М', 'К'),
-    ('К', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'М', 'К'));
+field1, field2: TMATRIX;
+  help_field1, help_field2, field1_with_boats,field2_with_boats:TMATRIX;
 
   lettersро: TMASSTR;
   i, j, index1, index2: integer;
   letter: char;
-  boat1, boat2: boat;
+  boat1,boat2: boat;
   shot, boats1, boats2, s: string;
   flag1, flag2, flag, repeatshot, blood_flag: boolean;
-  inputfile: textfile;
+  inputfile, Player1, Player2: textfile;
   coordin: coord;
   pos_coordin: TMASCOORD;
 
-function IfFileValid(FileName: string): Pole;
+function IfFileValid(FileName: string): TMatrix;
 var
   f: textfile;
   FileData: Str;
-  i, j: integer;
-  TempMat: array [1 .. 10, 1 .. 10] of char;
-  Pol: Pole;
-
+  i, j, k: integer;
+  Flag: boolean;
+  TempMat: array [1 .. 10, 1 .. 10] of Ansichar;
+  Pol: Tmatrix;
 begin
-
-  AssignFile(f, FileName);
+  Flag:=True;
+  AssignFile(f, FileName +'.TXT', CP_UTF8);
   Reset(f);
-
   i := 1;
-
   while (not EOF(f)) do
   begin
     Readln(f, FileData[i]);
     i := i + 1;
   end;
-
   for var h := 1 to Length(FileData) do
   begin
-
-    for var k := 1 to Length(FileData[h]) do
+    k:=1;
+    while k<=Length(FileData[h]) do
     begin
-      if FileData[h][k] = ' ' then
-        delete(FileData[h], k, 1);
+      if FileData[h][k]=' ' then
+      begin
+      delete(FileData[h], k, 1);
+      end;
+      k:=k+1;
     end;
-
   end;
-
-  for var l := 1 to 10 do
-  begin
-
-    for var g := 1 to Length(FileData[l]) do
+  for var t:= 1 to Length(FileData) do
     begin
-
+      for var h := 1 to Length(FileData[t]) do
+        begin
+          FileData[t][h]:=(UpperCase(FileData[t][h])[1]);
+        end;
+    end;
+  if Length(FileData)=10 then
+  begin
+  for var l := 1 to 10 do
+   begin
+    if Length(FileData[l])=Length(Pol[l]) then
+    begin
+    for var g := 1 to Length(FileData[l]) do
+     begin
       case FileData[l][g] of
         'М':
-          begin
-            Pol[l][g] := '0';
-          end;
-
+        begin
+          Pol[l][g]:='М';
+        end;
         'К':
-          begin
-            Pol[l][g] := '1';
-          end;
-
-      else
-
+        begin
+          Pol[l][g]:='К';
+        end;
+        else
         begin
           Writeln('Некорректно введенный файл!');
-          Readln;
+          readln;
+          Flag:=false;
           break;
         end;
-
       end;
+     end;
+    end
+    else
+    begin
+      Writeln('Некорректно введенный файл!');
+      readln;
+      Flag:=false;
+      break;
     end;
+   end;
+  end
+  else
+  begin
+    Writeln('Некорректно введенный файл!');
+    readln;
+    Flag:=false;
   end;
 
+  if Flag then
   result := Pol
-
 end;
 
 procedure ClearScreen;
@@ -1097,6 +1095,8 @@ end;
 begin
 
   help_table(lettersро);
+  field1_with_boats := IfFileValid('Player1');
+  field2_with_boats :=  IfFileValid('Player2');
 
   if (ships_valid(field1_with_boats) and ships_valid(field2_with_boats)) then
 
