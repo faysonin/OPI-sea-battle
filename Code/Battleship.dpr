@@ -1,8 +1,6 @@
 ﻿program battleship;
-
 {$APPTYPE CONSOLE}
 {$R *.res}
-
 uses
   Windows,
   Messages,
@@ -16,11 +14,9 @@ type
   coord = array [1 .. 4] of integer;
   TMASCOORD = array [1 .. 4] of string;
   boat = array [1 .. 22] of string;
-
 var
   field1, field2: TMATRIX;
   help_field1, help_field2, field1_with_boats, field2_with_boats: TMATRIX;
-
   lettersро: TMASSTR;
   i, j, index1, index2: integer;
   letter: char;
@@ -30,7 +26,6 @@ var
   inputfile, Player1, Player2: textfile;
   coordin: coord;
   pos_coordin: TMASCOORD;
-
 function IfFileValid(FileName: string): TMATRIX;
 var
   f: textfile;
@@ -110,7 +105,6 @@ begin
     Readln;
     flag := false;
   end;
-
   if flag then
     result := Pol
 end;
@@ -136,7 +130,6 @@ begin
     if (ord(bufer[1])<>1049) and (ord(bufer[1])<1051) and (ord(bufer[1])>1039) and (bufer[2]='-') and (((length(bufer)=3)and(bufer[3] in ['1'..'9']))or((length(bufer)=4)and(bufer[3]='1')and(bufer[4]='0')))then
     flag:=true
     else write('введите координаты заново: ');
-
   until flag=true;
   shot:=bufer;
 end;
@@ -160,64 +153,47 @@ begin
     Origin, NumWritten));
   Win32Check(SetConsoleCursorPosition(stdout, Origin));
 end;
-
 procedure help_table(var for_letters: TMASSTR); // для считывания
 var // индексов букв
   letter: char;
-
 begin
   letter := 'А';
-
   for i := 1 to 10 do
   begin
-
     if letter = 'Й' then
     begin
       letter := 'К';
     end;
-
     lettersро[i] := letter;
     letter := Chr(Ord(letter) + 1);
-
   end;
-
   letter := '1';
-
   for i := 11 to 20 do
   begin
-
     if letter = ':' then
     begin
       lettersро[i] := '10';
     end
-
     else
     begin
       lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
-
   end;
-
   letter := 'а';
-
   for i := 21 to 30 do
   begin
-
     if letter = 'й' then
     begin
       lettersро[i] := 'к';
     end
-
     else
     begin
       lettersро[i] := letter;
       letter := Chr(Ord(letter) + 1);
     end;
-
   end;
 end;
-
 procedure check_coord(var coorrdin: coord; var field_with_boats, field,
   help_field_1: TMATRIX; var s: string; var change: boolean);
 var
@@ -255,7 +231,6 @@ begin
       coordin[1] := i - 1;
       pos_coordin[1] := s;
     end;
-
   end;
   if field_with_boats[10, 1] = 'К' then
   begin
@@ -289,7 +264,6 @@ begin
       coordin[2] := 10 - i;
       pos_coordin[2] := s;
     end;
-
   end;
   if field_with_boats[10, 10] = 'К' then
   begin
@@ -558,10 +532,8 @@ begin
         help_field_1[i, 10] := field_with_boats[i, 10];
       end;
     end;
-
   end;
 end;
-
 procedure outputMAS(var MAS, MAS2: TMATRIX);
 // Выводит матрицу, поле с короблями
 var
@@ -667,7 +639,6 @@ begin
   Writeln;
   Writeln;
 end;
-
 procedure check_kill(var field, field_with_boats: TMATRIX;
   var index1, index2: integer);
 var
@@ -712,7 +683,6 @@ begin
       f4 := false;
       k := 0;
     end;
-
     if ((field_with_boats[index2 + m, index1] = 'К') or
       (field_with_boats[index2 + m, index1] = 'Р')) and f1 then
     begin
@@ -773,7 +743,6 @@ begin
         begin
           flag1 := false;
         end;
-
       end;
     end
     else if (s = 'up') or (s = 'down') then
@@ -798,7 +767,6 @@ begin
           inc(counter2);
         end
         else if flag_check2 then
-
         begin
           flag_check2 := false;
         end;
@@ -855,12 +823,10 @@ begin
     end;
   end;
 end;
-
 Procedure GameWinner(player: integer; var field_with_boats: TMATRIX);
 var
   sum, j, k: integer;
 begin
-
   sum := 0;
   for i := 1 to 10 do
   begin
@@ -887,9 +853,7 @@ begin
     flag := false;
     repeatshot := false;
   end;
-
 end;
-
 procedure show_war(var field, field_with_boats, other_field_with_boats,
   help_field_1, help_field_2: TMATRIX; var onemoreshot: boolean;
   var index1, index2: integer);
@@ -950,7 +914,6 @@ begin
   begin
     field[index2, index1] := '*';
     field_with_boats[index2, index1] := '*';
-
     outputMAS(field, other_field_with_boats);
     Writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
     Readln;
@@ -965,7 +928,6 @@ begin
     begin
       onemoreshot := false;
       outputMAS(field, other_field_with_boats);
-
       Writeln('Ход переходит другом игроку, нажмите Enter для сокрытия поля');
       Readln;
       ClearScreen;
@@ -1039,9 +1001,7 @@ begin
       Writeln('Вы стреляете ещё раз');
     end;
   end;
-
 end;
-
 function ships_valid(var MAS: TMATRIX): boolean;
 var
   i, j, rep_num, m, k, ship_deck1, ship_deck2, ship_deck3, ship_deck4: integer;
@@ -1094,7 +1054,6 @@ begin
       end;
     end;
   end;
-
   rep_num := 0;
   for j := 1 to 10 do
   begin
@@ -1136,7 +1095,6 @@ begin
       end;
     end;
   end;
-
   j := 1;
   for i := 2 to 10 do
   begin
@@ -1156,7 +1114,6 @@ begin
       k := k + 1;
     until k > i;
   end;
-
   i := 10;
   for j := 2 to 9 do
   begin
@@ -1176,7 +1133,6 @@ begin
       k := k + 1;
     until m < j;
   end;
-
   i := 10;
   for j := 2 to 9 do
   begin
@@ -1196,7 +1152,6 @@ begin
       k := k - 1;
     until k < 1;
   end;
-
   i := 1;
   for j := 1 to 9 do
   begin
@@ -1216,18 +1171,14 @@ begin
       k := k + 1;
     until k > 10;
   end;
-
   if (ship_deck1 = 24) and (ship_deck2 = 3) and (ship_deck3 = 2) and
     (ship_deck4 = 1) and diagonal_flag then
     ships_valid := True;
 end;
-
 begin
-
   help_table(lettersро);
   field1_with_boats := IfFileValid('Player1');
   field2_with_boats := IfFileValid('Player2');
-
   if (ships_valid(field1_with_boats) and ships_valid(field2_with_boats)) then
   begin
     Writeln('Краткое описание: ');
@@ -1238,9 +1189,7 @@ begin
     Writeln('Приятной игры!');
     flag := True;
     repeatshot := True;
-
     Writeln('---------------------------------------------------------------------');
-
     // writeln('Начало игры!');
     // field1_with_boats := IfFileValid(boats2);
     Writeln('просим сесть за компьютер игрока номер 1');
@@ -1251,7 +1200,6 @@ begin
     begin
       Writeln('Ход игрока Номер 1');
       repeatshot := True;
-
       while repeatshot do
       begin
         ClearScreen;
@@ -1268,13 +1216,12 @@ begin
       begin
         Writeln('Ход игрока Номер 2.');
         repeatshot := True;
-
         while repeatshot do
         begin
           ClearScreen;
           ClearScreen;
           outputMAS(field1, field2_with_boats);
-          show_war(field1, field1_with_boats, field1_with_boats, help_field1,
+          show_war(field1, field1_with_boats, field2_with_boats, help_field1,
             help_field2, repeatshot, index1, index2);
           SetconsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
           FOREGROUND_GREEN or FOREGROUND_RED or FOREGROUND_INTENSITY);
@@ -1284,10 +1231,7 @@ begin
       end;
     end;
   end
-
   else
     Writeln('Количество или расположение кораблей неверно');
-
   Readln;
-
 end.
